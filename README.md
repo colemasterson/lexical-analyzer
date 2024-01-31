@@ -19,5 +19,13 @@ $ make
 
 After building the project, type './output <file.txt>', including the file you would like to perform lexical analysis on.
 ```
-./output test.txt
+$ ./output test.txt
+```
+
+## Cleanup
+
+To remove the .o files from the project directory, run the 'make clean' command to remove them.
+
+```
+$ make clean
 ```
