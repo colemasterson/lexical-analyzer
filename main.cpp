@@ -1,3 +1,19 @@
+/****************************************************************************
+ ** NAME: Cole Masterson                                                   **
+ ** CLASS: CSC446 - Compiler Construction                                  **
+ ** ASSIGNMENT: 1                                                          **
+ ** DATE: 1/31/2024                                                        **
+ ** INSTRUCTOR: Dr. George Hamer                                           **
+ ****************************************************************************
+ ** DESCRIPTION:                                                           **
+ **     This program serves as the main entry point for the lexical        **
+ **     analyzer of the Oberon-O language. It reads an input file,         **
+ **     processes its contents through the lexical analyzer, and displays  **
+ **     the lexemes along with their corresponding token types and values. **
+ **     The program expects the name of the file to analyze as a command   **
+ **     line argument.                                                     **
+ ****************************************************************************/
+
 #include "Lexer.h"
 
 using namespace std;

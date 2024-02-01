@@ -1,3 +1,17 @@
+/****************************************************************************
+ ** NAME: Cole Masterson                                                   **
+ ** CLASS: CSC446 - Compiler Construction                                  **
+ ** ASSIGNMENT: 1                                                          **
+ ** DATE: 1/31/2024                                                        **
+ ** INSTRUCTOR: Dr. George Hamer                                           **
+ **************************************************************************** 
+ ** DESCRIPTION:  Header file for the lexical analyzer of the Oberon-O     **
+ ** language. This file defines the token types, the Token structure,      **
+ ** global variables, and function prototypes necessary for lexical        **
+ ** analysis. It includes the necessary standard libraries and sets up     **
+ ** the structure for the lexer to identify various token types like       **
+ ** identifiers, numbers, strings, operators, and reserved keywords.       **
+*****************************************************************************/
 #ifndef LEXER_H
 #define LEXER_H
 

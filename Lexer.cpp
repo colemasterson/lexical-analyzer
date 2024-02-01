@@ -1,8 +1,19 @@
-/*
-  TODO:
-    1. Change up comments 
-    2. Testing
-*/
+/****************************************************************************
+ ** NAME: Cole Masterson                                                   **
+ ** CLASS: CSC446 - Compiler Construction                                  **
+ ** ASSIGNMENT: 1                                                          **
+ ** DATE: 1/31/2024                                                        **
+ ** INSTRUCTOR: Dr. George Hamer                                           **
+ ****************************************************************************  
+ ** DESCRIPTION:  This file implements the lexical analyzer for the        **
+ ** Oberon-O language, as defined in Lexer.h. It includes the core         **
+ ** functionalities for analyzing an input string and breaking it down     **
+ ** into tokens. The implementation covers various aspects such as         **
+ ** handling whitespace, identifying different types of tokens (like       **
+ ** identifiers, numbers, operators), and managing comments and errors.    **
+ ** The file initializes global variables and token maps, and defines      **
+ ** necessary functions for the lexical analysis process.                  **
+ ****************************************************************************/
 
 #include <iostream>
 #include <fstream>
@@ -45,7 +56,6 @@ map<string, TokenType> tokenMap = {
     {"RPAREN", RPAREN},
     {"COLON", COLON},
 
-    // Broken 
     {"LCURL", LCURL},
     {"RCURL", RCURL},
     {"LSQUARE", LSQUARE},
@@ -66,7 +76,6 @@ map<string, TokenType> tokenMap = {
     {"DIV", DIV},
     {"MOD", MOD},
 
-
     {"ERRORT", ERRORT},
     {"EOFT", EOFT},
 
@@ -74,29 +83,37 @@ map<string, TokenType> tokenMap = {
 
 map<TokenType, string> revTokenMap;
 
+//Doesn't really need a comment block, just creates a reverse tokenMap with a for loop
 extern void initRevMap()
 {
-    // initialize the reverse token map for easier token display
     for (const auto &pair : tokenMap) 
         revTokenMap[pair.second] = pair.first;
 }
-  
+
+/****************************************************************************
+ * FUNCTION: GetNextToken                                                   *
+ * DESCRIPTION:                                                             *
+ *     Scans the input string and identifies the next token in the sequence.*
+ * INPUTS:                                                                  *
+ *     - None                                                               *
+ * OUTPUTS:                                                                 *
+ *     - Token                                                              *
+ ****************************************************************************/
 extern Token GetNextToken() 
 {
-    while (tChar != '\0') {
-        if (isspace(tChar)) {//Check if the current character is a space then skip over
-        skip_whitespace();
-        continue;
+    while (tChar != '\0') 
+    {
+        if (isspace(tChar)) 
+        {
+            skip_whitespace();
+            continue;
         }
 
-        if (isalpha(tChar)) { //Check if the current character is in the alphabet
-        return identifier();
-        }
+        if (isalpha(tChar))
+            return identifier();
 
-        if (isdigit(tChar)) { //check if the current character is a digit
-        return number();
-        }
-
+        if (isdigit(tChar)) 
+            return number();
         switch (tChar) { //Specific cases for allowed symbols
         case '+':
             advance();
@@ -122,7 +139,6 @@ extern Token GetNextToken()
         case ';':
             advance();
             return Token{TokenType::SEMICOLON, ";"};
-
         case '(':
             if (peek() == '*') 
             {  // Check for comment start sequence '(*'
@@ -134,7 +150,6 @@ extern Token GetNextToken()
                 advance();
                 return Token{TokenType::LPAREN, "("};
             }
-
         case ')':
             advance();
             return Token{TokenType::RPAREN, ")"};
@@ -157,7 +172,6 @@ extern Token GetNextToken()
         case '~':
             advance();
             return Token{TokenType::TILDE, "~"};
-
         case '\'':
             return literal();
         case '<':
@@ -172,33 +186,73 @@ extern Token GetNextToken()
     return Token{TokenType::EOFT, ""};
 }
 
-void advance() {
-  pos++;
-  if (pos > input.length() - 1) {
-    tChar = '\0';
-  } 
-  else {
-    tChar = input[pos];
-  }
-  return;
+/****************************************************************************
+ * FUNCTION: advance                                                        *
+ * DESCRIPTION:                                                             *
+ *     Advances the current position in the input string and updates the    *
+ *     current character being analyzed (tChar).                            *
+ * INPUTS:                                                                  *
+ *     - None                                                               *
+ * OUTPUTS:                                                                 *
+ *     - Updates global variable char tChar                                 *
+ ****************************************************************************/
+
+void advance() 
+{
+    pos++;
+
+    if(pos > input.length() - 1) 
+        tChar = '\0';        
+    else
+        tChar = input[pos];
+
+    return;
 }
 
-void skip_whitespace() {
-  while (tChar != '\0' && isspace(tChar)) {
-    advance();
-  }
-  return;
+/****************************************************************************
+ * FUNCTION: skip_whitespace                                                *
+ * DESCRIPTION:                                                             *
+ *     Skips over any whitespace characters in the input string.            *
+ * INPUTS:                                                                  *
+ *     None                                                                 *
+ * OUTPUTS:                                                                 *
+ *     - Advances the global variable 'pos' to the next non-whitespace      *
+ *       character in 'input' and updates 'tChar' accordingly.              *
+ ****************************************************************************/
+
+void skip_whitespace() 
+{
+    while (tChar != '\0' && isspace(tChar))
+        advance();
+    return;
 }
 
-void comment() {
-    if (tChar == '(' && peek() == '*') {  // Check for opening of comment
-        advance();  // Consume '*'
-        while (true) {
+/****************************************************************************
+ * FUNCTION: comment                                                        *
+ * DESCRIPTION:                                                             *
+ *     Detects and skips over comments in the input string. Comments are    *
+ *     expected to start with '(*' and end with '*)'.                       *
+ * INPUTS:                                                                  *
+ *     None                                                                 *
+ * OUTPUTS:                                                                 *
+ *     - Advances the global variable 'pos' until the end of the comment or *
+ *       end of the file is reached. Updates 'tChar' accordingly.           *
+ ****************************************************************************/
+
+void comment() 
+{
+    if (tChar == '(' && peek() == '*') 
+    {
+        advance();
+        while (true) 
+        {
             advance();
-            if (tChar == '\0') {  // End of file reached
+
+            if (tChar == '\0') 
                 return;
-            }
-            if (tChar == '*' && peek() == ')') {  // Check for closing of comment
+
+            if (tChar == '*' && peek() == ')') 
+            {
                 advance();  // Consume ')'
                 advance();  // Move past the closing ')'
                 break;
@@ -207,22 +261,48 @@ void comment() {
     }
 }
 
-
-char peek() {
+/****************************************************************************
+ * FUNCTION: peek                                                           *
+ * DESCRIPTION:                                                             *
+ *     Returns the character following the current position in the input    *
+ *     string without advancing the position.                               *
+ * INPUTS:                                                                  *
+ *     None                                                                 *
+ * OUTPUTS:                                                                 *
+ *     - Returns a char: the next character in 'input', or '\0' if the end  *
+ *       of the input is reached.                                           *
+ ****************************************************************************/
+char peek() 
+{
     // Check if we're at the end of the input
-    if (pos + 1 >= input.length()) {
-        return '\0'; // Return null character if there are no more characters
-    }
-    return input[pos + 1]; // Return the next character without advancing pos
+    if (pos + 1 >= input.length()) 
+        return '\0';
+    
+    return input[pos + 1];
 }
 
-Token literal() {
+/****************************************************************************
+ * FUNCTION: literal                                                        *
+ * DESCRIPTION:                                                             *
+ *     Processes string or character literals in the input, handling        *
+ *     unterminated literals as errors.                                     *
+ * INPUTS:                                                                  *
+ *     None                                                                 *
+ * OUTPUTS:                                                                 *
+ *     - Returns a Token of type STRING with the extracted literal. In case *
+ *       of an unterminated literal, returns an error token (ERRORT).       *
+ ****************************************************************************/
+
+Token literal() 
+{
     string result;
     char quoteType = tChar; // Save the quote type (' or ")
     advance();
 
-    while (tChar != quoteType) { // Continue until the matching quote is found
-        if (tChar == '\0' || tChar == '\n') {
+    while (tChar != quoteType) 
+    { // Continue until the matching quote is found
+        if (tChar == '\0' || tChar == '\n') 
+        {
             cout << "Unterminated literal" << endl;
             return Token{TokenType::ERRORT, result}; // Use ERRORT for error tokens
         }
@@ -231,14 +311,22 @@ Token literal() {
     }
     advance(); // Skip the closing quote
 
-    if (quoteType == '\'') {
-        // Handle character literal
+    if (quoteType == '\'') 
+        return Token{TokenType::STRING, result, 0, 0.0, result}; 
+    else 
         return Token{TokenType::STRING, result, 0, 0.0, result};
-    } else {
-        // Handle string literal
-        return Token{TokenType::STRING, result, 0, 0.0, result};
-    }
 }
+
+/****************************************************************************
+ * FUNCTION: relop                                                          *
+ * DESCRIPTION:                                                             *
+ *     Identifies and processes relational operators in the input string.   *
+ * INPUTS:                                                                  *
+ *     None                                                                 *
+ * OUTPUTS:                                                                 *
+ *     - Returns a Token of type RELOP with the relational operator         *
+ *       identified in the input string.                                    *
+ ****************************************************************************/
 
 Token relop()
 {
@@ -256,6 +344,18 @@ Token relop()
         return Token{TokenType::RELOP, result};
 }
 
+/****************************************************************************
+ * FUNCTION: assignop                                                       *
+ * DESCRIPTION:                                                             *
+ *     Processes the assignment operator (:=) or a standalone colon in the  *
+ *     input string.                                                        *
+ * INPUTS:                                                                  *
+ *     None                                                                 *
+ * OUTPUTS:                                                                 *
+ *     - Returns a Token of type ASSIGNOP for the assignment operator or    *
+ *       COLON for a standalone colon.                                      *
+ ****************************************************************************/
+
 Token assignop()
 {
     string result;
@@ -272,6 +372,19 @@ Token assignop()
         return Token{TokenType::COLON, result};
     }
 }
+
+/****************************************************************************
+ * FUNCTION: identifier                                                     *
+ * DESCRIPTION:                                                             *
+ *     Processes alphanumeric sequences in the input string as identifiers. *
+ *     Identifiers are truncated to a maximum of 17 characters. Special    *
+ *     cases like OR, DIV, and MOD are treated as operators.                *
+ * INPUTS:                                                                  *
+ *     None                                                                 *
+ * OUTPUTS:                                                                 *
+ *     - Returns a Token of type IDENTIFIER, ADDOP, or MULOP, depending on  *
+ *       the identifier or operator identified in the input string.         *
+ ****************************************************************************/
 
 Token identifier() 
 {
@@ -299,6 +412,17 @@ Token identifier()
       return Token{TokenType::IDENTIFIER, result};
 }
 
+/****************************************************************************
+ * FUNCTION: real                                                           *
+ * DESCRIPTION:                                                             *
+ *     Processes the fractional part of a real number, building upon a      *
+ *     previously collected integer part.                                   *
+ * INPUTS:                                                                  *
+ *     - string temp: The integer part of the real number already collected *
+ * OUTPUTS:                                                                 *
+ *     - Returns a Token of type REAL with the complete real number.        *
+ ****************************************************************************/
+
 Token real(string temp)
 {
     advance();
@@ -310,6 +434,20 @@ Token real(string temp)
 
     return Token{TokenType::REAL, temp, 0, stof(temp)};
 }
+
+/****************************************************************************
+ * FUNCTION: number                                                         *
+ * DESCRIPTION:                                                             *
+ *     Identifies and processes numeric literals in the input string. If a  *
+ *     decimal point is encountered, it hands off processing to the real    *
+ *     function to handle real numbers. Otherwise, it treats the sequence   *
+ *     as an integer.                                                       *
+ * INPUTS:                                                                  *
+ *     None                                                                 *
+ * OUTPUTS:                                                                 *
+ *     - Returns a Token of type INTEGER for integers or delegates to real  *
+ *       function for real numbers.                                         *
+ ****************************************************************************/
 
 Token number() 
 {
