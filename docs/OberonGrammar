@@ -1,0 +1,40 @@
+Prog -> modulet idt; DeclarativePart StatementPart endt idt.
+
+DeclarativePart -> ConstPart VarPart ProcPart
+
+ConstPart -> constt ConstTail | 
+
+ConstTail -> idt = Value ; ConstTail | 
+
+VarPart -> vart VarTail | 
+
+VarTail -> IdentifierList : TypeMark ; VarTail | 
+
+IdentifierList -> idt | IdentifierList , idt
+
+TypeMark -> integert | realt | chart
+
+Value -> NumericalLiteral
+
+ProcPart -> ProcedureDecl ProcPart | 
+
+ProcedureDecl -> ProcHeading ; ProcBody idt ;
+
+ProcHeading -> proct idt Args
+
+ProcBody -> DeclarativePart StatementPart endt
+
+Args -> ( ArgList ) | 
+
+ArgList -> Mode IdentifierList : TypeMark MoreArgs
+
+MoreArgs -> ; ArgList | 
+
+Mode -> vart | 
+
+StatmentPart -> begint SeqOfStatements | 
+
+SeqOfStatements -> 
+
+
+

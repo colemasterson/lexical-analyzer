@@ -21,7 +21,6 @@
 using namespace std;
 
 void match(TokenType desired);
-void PROG();
 void DECLS();
 void SUB_PROGS();
 void COMP_STAT();
@@ -31,10 +30,27 @@ void VARS();
 void SUB_DECL();
 void CONSTS_DECL();
 void VAR_DECL();
-void ARGS();
-void ID_LIST();
 void TYPE();
+
+void PROG();
+void DECLPART();
+void CONSTPART();
+void CONSTTAIL();
+void VARPART();
+void VARTAIL();
+void ID_LIST();
+void TYPEMARK();
+void VALUE();
+void PROCPART();
+void PROCDECL();
+void PROCHEAD();
+void PROCBODY();
+void ARGS();
 void ARG_LIST();
-void MODE();
 void MORE_ARGS();
+void MODE();
+void STATEPART();
+void SEQ_STATE();
+
+
 #endif

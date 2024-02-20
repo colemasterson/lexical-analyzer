@@ -27,7 +27,7 @@ using namespace std;
 enum TokenType {
     // Reserved token types
     MODULE, PROCEDURE, VAR, BEGIN, END, IF, THEN, ELSE, ELSIF, WHILE, DO,
-    ARRAY, RECORD, CONST, TYPE, INTEGER, REAL,
+    ARRAY, RECORD, CONST, TYPE, INTEGER, REAL, CHAR,
 
     // Symbol token types
     COMMA, PERIOD, SEMICOLON, LPAREN, RPAREN, COLON,

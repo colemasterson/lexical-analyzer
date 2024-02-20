@@ -1,13 +1,10 @@
 /****************************************************************************
- ** NAME: Dylan Miller                                                     **
+ ** NAME: Cole Masterson                                                   **
  ** CLASS: CSC 446                                                         **
  ** ASSIGNMENT: 3                                                          **
- ** DUE DATE: 2/22/23                                                      **
+ ** DUE DATE: 2/21/23                                                      **
  ** INSTRUCTOR: Dr. Hamer                                                  **
- **************************************************************************** 
- ** DESCRIPTION:  Parser for the Pascal language that evaluates if the     **
- **             given file is the correct syntax for the pascal language   **
- ****************************************************************************/
+ ***************************************************************************/
 
 #include "parser.h"
 #include "Lexer.h"
@@ -33,10 +30,10 @@ using namespace std;
 
 void match(TokenType desired){
   if(token.type == desired){
-    token = get_next_token();
+    token = GetNextToken();
   }
   else{
-    cout<<"Parse Error. Token: " <<TokenList[token.type]<<" Desired Type: "<<TokenList[desired]<<endl;
+    cout<<"Parse Error. Token: " <<revTokenMap[token.type]<<" Desired Type: "<<revTokenMap[desired]<<endl;
     cin.ignore();
   }
   return;
@@ -91,7 +88,7 @@ void DECLS(){
  ****************************************************************************/
 
 void SUB_PROGS(){
-  if(token.type == TokenType::PROCT){
+  if(token.type == TokenType::PROCEDURE){
     SUB_DECL();
     SUB_PROGS();
   }
@@ -112,9 +109,9 @@ void SUB_PROGS(){
  ****************************************************************************/
 
 void COMP_STAT(){
-  match(TokenType::BEGINT);
+  match(TokenType::BEGIN);
   STAT_LIST();
-  match(TokenType::ENDT);
+  match(TokenType::END);
   return;
 }
 
@@ -144,8 +141,8 @@ void STAT_LIST(){
 
 void CONSTS(){
   // cout<<"consts"<<endl;
-  if(token.type == TokenType::CONSTT){
-    match(TokenType::CONSTT);
+  if(token.type == TokenType::CONST){
+    match(TokenType::CONST);
     CONSTS_DECL();
     CONSTS();
   }
@@ -164,8 +161,8 @@ void CONSTS(){
 
 void VARS(){
   // cout<<"Vars"<<endl;
-  if(token.type == TokenType::VART){
-    match(TokenType::VART);
+  if(token.type == TokenType::VAR){
+    match(TokenType::VAR);
     VAR_DECL();
   }
   return;  
@@ -182,14 +179,14 @@ void VARS(){
  ****************************************************************************/
 
 void SUB_DECL(){
-  match(TokenType::PROCT);
-  match(TokenType::IDT);
+  match(TokenType::PROCEDURE);
+  match(TokenType::IDENTIFIER);
   ARGS();
-  match(TokenType::SEMIT);
+  match(TokenType::SEMICOLON);
   DECLS();
   // cout<<"here"<<endl;
   COMP_STAT();
-  match(TokenType::SEMIT);
+  match(TokenType::SEMICOLON);
   return;
 }
 
@@ -205,12 +202,12 @@ void SUB_DECL(){
 
 void CONSTS_DECL(){
   // cout<<"consts_decl"<<endl;
-  if(token.type == TokenType::IDT){
-    match(TokenType::IDT);
-    match(TokenType::RELOPT);
+  if(token.type == TokenType::IDENTIFIER){
+    match(TokenType::IDENTIFIER);
+    match(TokenType::RELOP);
     // cout<<TokenList[token.type]<<endl;
-    match(TokenType::NUMT);
-    match(TokenType::SEMIT);
+    match(TokenType::NUMBER);
+    match(TokenType::SEMICOLON);
     CONSTS_DECL();
   }
   return;
@@ -227,11 +224,11 @@ void CONSTS_DECL(){
  ****************************************************************************/
 
 void VAR_DECL(){
-  if(token.type == TokenType::IDT){
+  if(token.type == TokenType::IDENTIFIER){
     ID_LIST();
-    match(TokenType::COLONT);
+    match(TokenType::COLON);
     TYPE();
-    match(TokenType::SEMIT);
+    match(TokenType::SEMICOLON);
     VAR_DECL();
   }
   return;
@@ -248,10 +245,10 @@ void VAR_DECL(){
  ****************************************************************************/
 
 void ARGS(){
-  if(token.type == TokenType::LPARENT){
-    match(TokenType::LPARENT);
+  if(token.type == TokenType::LPAREN){
+    match(TokenType::LPAREN);
     ARG_LIST();
-    match(TokenType::RPARENT);
+    match(TokenType::RPAREN);
   }
   return;
 }
@@ -267,9 +264,9 @@ void ARGS(){
  ****************************************************************************/
 
 void ID_LIST(){
-  match(TokenType::IDT);\
-  if(token.type == TokenType::COMMAT){
-    match(TokenType::COMMAT);
+  match(TokenType::IDENTIFIER);\
+  if(token.type == TokenType::COMMA){
+    match(TokenType::COMMA);
     ID_LIST();
   }
   return;
@@ -286,12 +283,19 @@ void ID_LIST(){
  ****************************************************************************/
 
 void TYPE(){
-  if(token.type == TokenType::INTT){
-    match(TokenType::INTT);
+  if(token.type == TokenType::INTEGER)
+  {
+    match(TokenType::INTEGER);
   }
-  else{
-    match(TokenType::REALT);
+  else if(token.type == TokenType::REAL)
+  {
+    match(TokenType::REAL);
   }
+  else
+  {
+    match(TokenType::CHAR);
+  }
+
   return;
 }
 
@@ -308,7 +312,7 @@ void TYPE(){
 void ARG_LIST(){
   MODE();
   ID_LIST();
-  match(TokenType::COLONT);
+  match(TokenType::COLON);
   TYPE();
   MORE_ARGS();
   return;
@@ -325,8 +329,8 @@ void ARG_LIST(){
  ****************************************************************************/
 
 void MODE(){
-  if(token.type == TokenType::VART){
-    match(TokenType::VART);
+  if(token.type == TokenType::VAR){
+    match(TokenType::VAR);
   }
   return;
 }
@@ -342,8 +346,8 @@ void MODE(){
  ****************************************************************************/
 
 void MORE_ARGS(){
-  if(token.type == TokenType::SEMIT){
-    match(TokenType::SEMIT);
+  if(token.type == TokenType::SEMICOLON){
+    match(TokenType::SEMICOLON);
     ARG_LIST();
   }
   return;
