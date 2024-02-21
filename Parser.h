@@ -21,18 +21,7 @@
 using namespace std;
 
 void match(TokenType desired);
-void DECLS();
-void SUB_PROGS();
-void COMP_STAT();
-void STAT_LIST();
-void CONSTS();
-void VARS();
-void SUB_DECL();
-void CONSTS_DECL();
-void VAR_DECL();
-void TYPE();
-
-void PROG();
+extern void PROG();
 void DECLPART();
 void CONSTPART();
 void CONSTTAIL();
