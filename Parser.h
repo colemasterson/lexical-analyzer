@@ -21,7 +21,7 @@
 using namespace std;
 
 void match(TokenType desired);
-extern void PROG();
+void PROG();
 void DECLPART();
 void CONSTPART();
 void CONSTTAIL();
@@ -40,6 +40,5 @@ void MORE_ARGS();
 void MODE();
 void STATEPART();
 void SEQ_STATE();
-
 
 #endif

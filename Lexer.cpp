@@ -48,7 +48,8 @@ map<string, TokenType> tokenMap = {
     {"TYPE", TYPE},
     {"INTEGER", INTEGER},
     {"REAL", REAL},
-
+    {"CHAR", CHAR},
+    
     {"COMMA", COMMA},
     {"PERIOD", PERIOD},
     {"SEMICOLON", SEMICOLON},
@@ -385,31 +386,37 @@ Token assignop()
  *     - Returns a Token of type IDENTIFIER, ADDOP, or MULOP, depending on  *
  *       the identifier or operator identified in the input string.         *
  ****************************************************************************/
-
-Token identifier() 
+Token identifier()
 {
     string result;
-
     while (tChar != '\0' && isalnum(tChar)) 
     {
         result += tChar;
         advance();
     }
 
+    // check if the id is longer than 17 chars. If so, return substr
     if(result.length() > 17)
         result = result.substr(0,17);
 
-    //add case to catch OR, DIV, MOD and assign as addop/mulop
-    if(tokenMap[result] == TokenType::OR)  
+    auto it = tokenMap.find(result);
+
+    if (it != tokenMap.end()) 
+    {
+        // Key exists, access it with it->first (key) and it->second (value)
+        if(it->second == TokenType::OR)  
         return Token{TokenType::ADDOP, result};
 
-    if(tokenMap[result] == TokenType::DIV || tokenMap[result] == TokenType::MOD)
-        return Token{TokenType::MULOP, result}; 
+        if(it->second == TokenType::DIV || it->second == TokenType::MOD)
+            return Token{TokenType::MULOP, result};
 
-    if (tokenMap.count(result))
-        return Token{tokenMap[result], result};
-    else
-      return Token{TokenType::IDENTIFIER, result};
+        return Token{it->second, result};
+    } 
+    else 
+    {
+        // Key does not exist, handle accordingly without modifying the map
+        return Token{TokenType::IDENTIFIER, result};
+    }
 }
 
 /****************************************************************************

@@ -1,13 +1,16 @@
-# Lexical Analyzer
+# Part 1 - Lexical Analyzer
 
-This project creates a lexical analyzer for use with a subset of the Oberon-O programming langauges.
+This project creates a lexical analyzer for use with a subset of the Oberon-O programming langauge.
 It defines functions to parse and tokenize source code, with the ability to store both real and integer values,
 as well as literals.
+
+# Part 2 - Recursive Descent Parser
+The second part of this project involves the integration of a parser using recursive descent for the Oberon-O CFG into the Lexer. This give the program the ability to detect invalid syntax based on the expecations of the grammar.
 
 ## Installation
 
 Simply clone the repository to a location of your choosing.
-Make sure you have text files of oberon-o source code that you can use to test the lexer.
+Make sure you have text files of Oberon-O source code that you can use to test the lexer.
 
 ## Usage
 

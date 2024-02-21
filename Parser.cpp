@@ -6,7 +6,7 @@
  ** INSTRUCTOR: Dr. Hamer                                                  **
  ***************************************************************************/
 
-#include "parser.h"
+#include "Parser.h"
 #include "Lexer.h"
 #include <iostream>
 #include <fstream>
@@ -31,10 +31,21 @@ using namespace std;
 void match(TokenType desired)
 {
     if(token.type == desired)
+    {
+        /*cout << setw(20) << "SUCCESS" 
+        << setw(20) << "LEXEME:" 
+        << setw(20) << token.lexeme 
+        << setw(20) << "TOKEN:" 
+        << setw(20) << revTokenMap[token.type] << endl;*/
         token = GetNextToken();
+    }
     else
     {
-        cout<<"Parse Error. Token: " <<revTokenMap[token.type]<<" Desired Type: "<<revTokenMap[desired]<<endl;
+        cout <<setw(20) <<"PARSE ERROR:"
+        << setw(20) <<" Lexeme: "<< token.lexeme <<", Token: " <<revTokenMap[token.type]
+        << setw(20) <<" Desired Type: "<<revTokenMap[desired]<<endl;
+
+        //token = GetNextToken();
         cin.ignore();
     }
 
@@ -50,7 +61,6 @@ void match(TokenType desired)
  ** OUTPUT ARGS: None                                                      **
  ** IN/OUT ARGS: None                                                      ** 
  ****************************************************************************/
-
 void PROG()
 {
     match(TokenType::MODULE);
@@ -73,7 +83,6 @@ void PROG()
  ** OUTPUT ARGS: None                                                      **
  ** IN/OUT ARGS: None                                                      ** 
  ****************************************************************************/
-
 void DECLPART()
 {
 	CONSTPART();
@@ -232,7 +241,6 @@ void VALUE()
  ** OUTPUT ARGS: None                                                      **
  ** IN/OUT ARGS: None                                                      ** 
  ****************************************************************************/
-
 void PROCPART()
 {
 	if(token.type == TokenType::PROCEDURE)
@@ -252,7 +260,6 @@ void PROCPART()
  ** OUTPUT ARGS: None                                                      **
  ** IN/OUT ARGS: None                                                      ** 
  ****************************************************************************/
-
 void PROCDECL()
 {
 	PROCHEAD();
