@@ -2,15 +2,59 @@
 #define SYMBOLTABLE_H
 
 #include "Lexer.h"
-#include "STEntry.h"
+#include "Parser.h"
+
 #include <iostream>
 #include <vector>
 #include <string>
 
 using namespace std;
 
-// enum VariableType { INTEGER, REAL, BOOLEAN };
+ enum VariableType { INTEGERT, REALT, CHART };
 // enum ParameterPassingMode { BY_VALUE, BY_REFERENCE };
+
+struct STEntry
+{
+    string lexeme;
+    TokenType token;
+    int depth;
+    STEntry* next;
+
+    union {
+        struct {
+            VariableType type;
+            int offset;
+            int size;
+        } variable;
+
+        struct {
+            bool isReal;
+            union {
+                int intValue;
+                double realValue;
+            } value;
+        } constant;
+
+        struct {
+            int localVariablesSize;
+            int numParams;
+            //vector<VariableType> paramTypes;
+            //vector<ParameterPassingMode> paramPassingModes;
+        } procedure;
+    };
+
+    void print() const 
+    {
+        cout<<"Lexeme: "<<lexeme<<endl;
+        cout<<"Token: "<<revTokenMap[token]<<endl;
+        cout<<"Depth: "<<depth<<endl;
+
+        cout << "Type: " << variable.type << endl;
+        cout << "Offset: " << variable.offset << endl;
+        cout << "Size: " << variable.size << endl;
+    };
+
+};
 
 class SymbolTable {
 private:
@@ -24,11 +68,8 @@ private:
 public:
     SymbolTable(int size = 10);
     //Variable insert
-    void varInsert(string lexeme, TokenType token, int depth, VariableType type);
-    //const insert
-    void constInsert(string lexeme, TokenType token, int depth, bool isReal, int intValue, double realValue);
-    //procedure insert
-    void procInsert(string lexeme, TokenType token, int depth, int localVariablesSize, int numParams, vector<VariableType> paramTypes, vector<ParameterPassingMode> paramPassingModes);
+    void insert(string lexeme, TokenType token, int depth);
+
     STEntry* lookup(string lexeme);
     STEntry* createTemp(VariableType type, TokenType tokenType,int depth);
     void deleteDepth(int depth);
