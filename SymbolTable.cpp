@@ -1,4 +1,3 @@
-//#include "Lexer.h"
 #include "SymbolTable.h"
 
 using namespace std;
@@ -44,17 +43,6 @@ int SymbolTable::varSize(TokenType varType)
 }
 
 
-
-bool SymbolTable::multipleDec(string lexeme, string symTabLexeme, int depth, int symTabDepth)
-{
-    if(lexeme == symTabLexeme && depth == symTabDepth)
-    {
-        cout<<"Multiple declarations of the name: "<<lexeme << " at depth: "<< depth<<endl;
-        return true;
-    }
-    return false;
-}
-
 int SymbolTable::hash(string lexeme) 
 {
     unsigned long hash = 0;
@@ -64,7 +52,7 @@ int SymbolTable::hash(string lexeme)
     {
         hash = (hash << 4) + c;
         high = hash & 0xF0000000;
-        
+
         if (high != 0)
             hash ^= high >> 24;
         
