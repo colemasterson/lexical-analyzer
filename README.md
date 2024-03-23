@@ -18,20 +18,20 @@ Make sure you have text files of Oberon-O source code that you can use to test t
 
 ## Usage
 
-After installation, run the 'make' command to build the project.
+After installation, run the `make` command to build the project.
 
 ```
 $ make
 ```
 
-After building the project, type './output <file.txt>', including the file you would like to perform lexical analysis on.
+After building the project, type `./output` to see the symbol table in action with a predefined driver program that tests the functionality.
 ```
 $ ./output test.txt
 ```
 
 ## Cleanup
 
-To remove the .o files from the project directory, run the 'make clean' command to remove them.
+To remove the object files from the project directory, run the `make clean` command to remove them.
 
 ```
 $ make clean
