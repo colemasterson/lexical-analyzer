@@ -16,7 +16,7 @@ int SymbolTable::getOffset(int depth)
         while (currentNode != nullptr) 
         {
             if (currentNode->depth == depth)
-            {// && currentNode->token == "id") {
+            {
                 offset += currentNode->variable.size;
             }
             currentNode = currentNode->next;
@@ -55,15 +55,23 @@ bool SymbolTable::multipleDec(string lexeme, string symTabLexeme, int depth, int
     return false;
 }
 
-int SymbolTable::hash(string lexeme)
+int SymbolTable::hash(string lexeme) 
 {
-    int hash = 0;
+    unsigned long hash = 0;
+    unsigned long high;
+
     for (char c : lexeme) 
     {
-        hash = (hash * 31 + c) % size;
+        hash = (hash << 4) + c;
+        high = hash & 0xF0000000;
+        
+        if (high != 0)
+            hash ^= high >> 24;
+        
+        hash &= ~high;
     }
-    // cout<<"hash for "<<lexeme<<": " << hash<<endl;
-    return hash;
+
+    return hash % size;
 }
 
 
@@ -71,52 +79,23 @@ SymbolTable::SymbolTable(int size)
 {
     this->table.resize(size, nullptr);
     this->size = size;
-}
-
-STEntry* SymbolTable::createTemp(VariableType type,TokenType tokenType, int depth)
-{
-    string tempName;
-    if(depthTempMap[depth])
-    {
-        tempName = "_t" + (depthTempMap[depth]+1);
-        depthTempMap[depth] = ++depthTempMap[depth];
-    }
-    else
-    {
-        depthTempMap[depth] = 1;
-        tempName = "_t0";
-    }
-    this->insert(tempName, tokenType, depth);
-    if(this->lookup(tempName) == nullptr)
-    {
-        cout<<"returning nullptr in createTemp"<<endl;
-    }
-    // cin.ignore();
-    return this->lookup(tempName);
+    initRevMap();
 }
 
 void SymbolTable::insert(string lexeme, TokenType token, int depth) 
 {
     int hash = this->hash(lexeme);
-    // TokenType
-    // for(int i = 0; i<size; i++){
-    //     if(table[i] == nullptr){
-    //         cout<<"null pointer when creating at: "<<i<<endl;
-    //     }
-    // }
     STEntry * newNode = new STEntry{lexeme, token, depth};
-
 
     newNode->variable.type = VariableType::INTEGERT;
     newNode->variable.offset = this->getOffset(depth);
     
-    int tempInt = this->varSize(TokenType::INTEGER); //EDIT THIS LINE
+    int tempInt = this->varSize(TokenType::INTEGER);
     
     newNode->variable.size = this->varSize(token);
     
     if (table[hash] == nullptr) 
     {
-        // cout<<"this is a null pointer in insert"<<endl;
         table[hash] = newNode;
     }
     else {
@@ -134,24 +113,18 @@ STEntry* SymbolTable::lookup(string lexeme)
 {
     int hash = this->hash(lexeme);
     STEntry* currentNode = table[hash];
-    // for(int i = 0; i<size; i++){
-    //     if(table[i] == nullptr){
-    //         cout<<"null pointer when looking up at: "<<i<<endl;
-    //     }
-    //     else{
-    //         cout<<table[i]->lexeme<<endl;
-    //     }
-    // }
+
     while (currentNode != nullptr) 
     {
         if (currentNode->lexeme == lexeme) 
         {
+            cout << lexeme << " found at depth: " << currentNode->depth << endl;
             return currentNode;
         }
         currentNode = currentNode->next;
     }
-    // cout<<"returning NULLPTR for "<<lexeme<<endl;
-    // cin.ignore();
+
+    cout << lexeme << " was not found." << endl;
     return nullptr;
 }
 
@@ -166,13 +139,10 @@ void SymbolTable::deleteDepth(int depth)
             if (currentNode->depth == depth) 
             {
                 if (prevNode == nullptr) 
-                {
                     table[i] = currentNode->next;
-                }
                 else 
-                {
                     prevNode->next = currentNode->next;
-                }
+                
                 STEntry* temp = currentNode;
                 currentNode = currentNode->next;
                 delete temp;
@@ -184,126 +154,42 @@ void SymbolTable::deleteDepth(int depth)
             }
         }
     }
+
+    cout << "Table contents at depth " << depth << " deleted." << endl;
 }
 
-void SymbolTable::writeTable(int depth) {
-    // for(int i = 0; i<size; i++){
-    //     if(table[i] == nullptr){
-    //         cout<<"null pointer when writing at: "<<i<<endl;
-    //     }
-    //     if(i==7){
-    //         cout<<table[i]->lexeme<<endl;
-    //     }
-    // }
-    cout << "Variables in symbol table at depth " << depth << ":" << endl;
+void SymbolTable::writeTable(int depth) 
+{
+    cout << "Contents of table at depth " << depth << ":" << endl;
+    cout << setw(20) << "LEXEME" << setw(20) << "TOKEN" << setw(20) << "DEPTH" << setw(20) << "TYPE" << setw(20) << "OFFSET"<< setw(20) << "SIZE" << endl; 
+
     STEntry* currentNode = nullptr;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) 
+    {
         currentNode = nullptr;
-        if(table[i] != nullptr){
+        if(table[i] != nullptr)
             currentNode = table[i];
+        
+        while (currentNode != nullptr) 
+        {
+            if (currentNode->depth == depth)
+                currentNode->print();
+            
+            currentNode = currentNode->next;
         }
-        while (currentNode != nullptr) {
+    }
+}
 
-            if (currentNode->depth == depth){
-                currentNode->print(); //This line must be changed
-            }
-            currentNode = currentNode->next;
-        }
-    }
-}
-void SymbolTable::writeTableTest() {
-    cout << "Variables in symbol table at all depth:" << endl;
-    cout<<size<<endl;
-    for (int i = 7; i < size; i++) {
-        // cout<<"here1"<<endl;
-        // cin.ignore();
+SymbolTable::~SymbolTable() 
+{
+    for (int i = 0; i < size; i++) 
+    {   
         STEntry* currentNode = table[i];
-        // cout<<"here2"<<endl;
-        // cin.ignore();
-        if(currentNode == nullptr){//|| currentNode->lexeme == ""){
-            cout<<"this node is a nullptr"<<endl;
-        }
-        cout<<"here3: " << currentNode<<endl;
-        //cout<< currentNode->lexeme<<endl; //breaking here
-        while (currentNode != nullptr) {
-            cout<<"in while loop?"<<currentNode->depth<<endl;
-            if(currentNode->token == TokenType::PROCEDURE){
-                cout << "LEX: " << currentNode->lexeme<< " DEPTH: "<<currentNode->depth << " TYPE: "<< currentNode->token << " LOCAL VAR SIZE: "<<currentNode->procedure.localVariablesSize <<endl;
-            }
-            else if(currentNode->token == TokenType::INTEGER || currentNode->token == TokenType::REAL){
-                cout << "LEX: " << currentNode->lexeme<< " DEPTH: "<<currentNode->depth << " TYPE: "<< varTypeList[currentNode->variable.type] << " SIZE: "<<currentNode->variable.size << " OFFSET: " << currentNode->variable.offset<<endl;
-            }
-            else{
-                cout<<currentNode->lexeme<<endl;
-            }
-            currentNode = currentNode->next;
-        }
-    }
-}
-SymbolTable::~SymbolTable() {
-    for (int i = 0; i < size; i++) {
-        STEntry* currentNode = table[i];
-        while (currentNode != nullptr) {
+        while (currentNode != nullptr) 
+        {
             STEntry* temp = currentNode;
             currentNode = currentNode->next;
             delete temp;
         }
     }
 }
-
-/*
-
-void SymbolTable::constInsert(string lexeme, TokenType token, int depth, bool isReal, int intValue, double realValue) 
-{
-    int hash = this->hash(lexeme);
-    cout<<"Const token Type: "<<revTokenMap[token]<<endl;
-
-    STEntry* newNode = new STEntry(lexeme, token, depth);
-    newNode->constant.isReal = isReal;
-
-    if (isReal)
-        newNode->constant.value.realValue = realValue;
-    else 
-        newNode->constant.value.intValue = intValue;
-
-    if (table[hash] == nullptr) 
-        table[hash] = newNode;
-    else 
-    {
-        STEntry* currentNode = table[hash];
-        while (currentNode->next != nullptr) {
-            // cout<<"current node lex: " << currentNode->lexeme <<currentNode->depth <<" attempting to insert: "<< lexeme<<endl;
-            if(this->multipleDec(lexeme, currentNode->lexeme, depth, currentNode->depth)){
-                return;
-            }
-            currentNode = currentNode->next;
-        }
-        if(!this->multipleDec(lexeme, currentNode->lexeme, depth, currentNode->depth)){
-            currentNode->next = newNode;
-        }
-    }
-}
-
-void SymbolTable::procInsert(string lexeme, TokenType token, int depth, int localVariablesSize, int numParams, vector<VariableType> paramTypes, vector<ParameterPassingMode> paramPassingModes) 
-{
-    int hash = this->hash(lexeme);
-    STEntry* newNode = new STEntry(lexeme, token, depth);
-
-    newNode->procedure.localVariablesSize = localVariablesSize;
-    newNode->procedure.numParams = numParams;
-    newNode->procedure.paramTypes = paramTypes;
-    newNode->procedure.paramPassingModes = paramPassingModes;
-
-    if (table[hash] == nullptr) 
-        table[hash] = newNode;
-    else 
-    {
-        STEntry* currentNode = table[hash];
-
-        while (currentNode->next != nullptr)
-            currentNode = currentNode->next;
-
-        currentNode->next = newNode;
-    }
-}
-*/

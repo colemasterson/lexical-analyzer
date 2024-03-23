@@ -26,31 +26,18 @@ int main() {
     symTable.insert("grape", TokenType::INTEGER, 2);
 
     // Try to look up some variables
-    if (symTable.lookup("apple")) {
-        cout << "Found 'apple'" << endl;
-    } else {
-        cout << "'apple' not found" << endl;
-    }
-
-    if (symTable.lookup("mango")) {
-        cout << "Found 'mango'" << endl;
-    } else {
-        cout << "'mango' not found" << endl;
-    }
+    symTable.lookup("apple");
+    symTable.lookup("mango");
 
     // Write the table for depth 1 and 2 to see the current state
-    cout << "Table content at depth 1:" << endl;
     symTable.writeTable(1);
-
-    cout << "\nTable content at depth 2:" << endl;
     symTable.writeTable(2);
 
     // Delete all variables at depth 1
     symTable.deleteDepth(1);
 
     // Display the table again to verify deletion
-    cout << "\nTable after deleting depth 1:" << endl;
-    symTable.writeTableTest(); // Assuming writeTableTest shows all entries regardless of depth
+    symTable.writeTable(1);
 
     return 0;
 }
