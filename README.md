@@ -26,7 +26,7 @@ $ make
 
 After building the project, type `./output` to see the symbol table in action with a predefined driver program that tests the functionality.
 ```
-$ ./output test.txt
+$ ./output
 ```
 
 ## Cleanup
