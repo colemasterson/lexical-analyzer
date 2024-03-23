@@ -7,6 +7,10 @@ as well as literals.
 # Part 2 - Recursive Descent Parser
 The second part of this project involves the integration of a parser using recursive descent for the Oberon-O CFG into the Lexer. This give the program the ability to detect invalid syntax based on the expecations of the grammar.
 
+# Part 3 - Symbol Table with Hashing
+The third part of this project involves the construction of a symbol table that will hold the variables, constants, and procedures
+for functions written in source. The hashing function is a direct implementation of the PJW hashing function to reduce collions.
+
 ## Installation
 
 Simply clone the repository to a location of your choosing.
