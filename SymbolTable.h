@@ -2,17 +2,15 @@
 #define SYMBOLTABLE_H
 
 #include "Lexer.h"
-#include "Parser.h"
 #include <vector>
 
 using namespace std;
 
-const int TableSize = 211;
+const int TableSize = 223;
 
 enum VariableType { INTEGERT, REALT, CHART };
 enum ParameterPassingMode { BY_VALUE, BY_REFERENCE };
 enum EntryType {varType, constType, procType};
-
 
 template<typename T> struct ListNode
 {
@@ -82,11 +80,16 @@ class SymbolTable
 		int hash(string lexeme);
 		int varSize(TokenType varType);
 		int getOffset(int depth);
-
+        bool multipleDec(string lexeme, string symTabLexeme, int depth, int symTabDepth);
 	public:
 		SymbolTable(int size = TableSize);
+		void insertVar(string lexeme, TokenType token, int depth, VariableType type);
+        void insertConst(string lexeme, TokenType token, int depth, bool isReal, int intValue, float realValue);
+        void insertProc(string lexeme, TokenType token, int depth, int localVariablesSize, int numParams, ListNode<VariableType>* paramTypes, ListNode<ParameterPassingMode>* paramPassingModes);
 
-		void insert(string lexeme, TokenType token, int depth);
+        int getParamListSize(ListNode<ParameterPassingMode>* elements);
+        int getVarListSize(ListNode<VariableType>* elements);
+
 		STEntry* lookup(string lexeme);
 		void deleteDepth(int depth);
 		void writeTable(int depth);

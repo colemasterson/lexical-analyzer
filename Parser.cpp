@@ -18,6 +18,20 @@
 
 using namespace std;
 
+list<Token> tempList;
+Token tempToken;
+Token tempTokenIdt;
+
+ListNode<VariableType> * paramTypes;
+ListNode<ParameterPassingMode> * paramPassingModes;
+
+//SymbolTable symTable;
+stack<Token> tokenStack;
+int maxDepth = 0;
+int depth = 0;
+
+
+
 /****************************************************************************
  ** FUNCTION: match(TokenType desired)                                     **
  ****************************************************************************
@@ -45,8 +59,9 @@ void match(TokenType desired)
         << setw(20) <<" Lexeme: "<< token.lexeme <<", Token: " <<revTokenMap[token.type]
         << setw(20) <<" Desired Type: "<<revTokenMap[desired]<<endl;
 
-        //token = GetNextToken();
         cin.ignore();
+		token = GetNextToken();
+
     }
 
     return;
@@ -122,10 +137,18 @@ void CONSTPART()
  ****************************************************************************/
 void CONSTTAIL()
 {
+	string tLexeme;
 	if(token.type == TokenType::IDENTIFIER)
 	{
+		tLexeme = token.lexeme;
 		match(TokenType::IDENTIFIER);
 		match(TokenType::RELOP);
+
+		if(token.value != 0)
+			symTable.insertConst(tLexeme, token.type, depth, false, token.value, 0.0);
+		else if(token.valueR != 0)
+			symTable.insertConst(tLexeme, token.type, depth, false, 0, token.valueR);
+
 		VALUE();
 		match(TokenType::SEMICOLON);
 		CONSTTAIL();
@@ -170,6 +193,7 @@ void VARTAIL()
 		match(TokenType::COLON);
 		TYPEMARK();
 		match(TokenType::SEMICOLON);
+		tempList.clear();
 		VARTAIL();
 	}
 	return;
@@ -186,6 +210,7 @@ void VARTAIL()
  ****************************************************************************/
 void ID_LIST()
 {
+	tempList.push_back(token);
 	match(TokenType::IDENTIFIER);
 	if(token.type == TokenType::COMMA)
 	{
@@ -207,11 +232,35 @@ void ID_LIST()
 void TYPEMARK()
 {
 	if(token.type == TokenType::INTEGER)
+	{
+		if(tempList.size() >= 1)
+		{
+			for(auto tempToken : tempList)
+			{
+				tempToken.type = TokenType::INTEGER;
+				symTable.insertVar(tempToken.lexeme, tempToken.type, depth, VariableType::INTEGERT);
+			}
+		}
 		match(TokenType::INTEGER);
-	else if(token.type == TokenType::REAL)
+	}
+	else if(token.type == TokenType::REAL) 
+	{
+		for(auto tempToken:tempList)
+		{
+			tempToken.type = TokenType::REAL;
+			symTable.insertVar(tempToken.lexeme, tempToken.type, depth, VariableType::REALT); 
+		}
 		match(TokenType::REAL);
+	}
 	else
+	{
+		for(auto tempToken:tempList)
+		{
+			tempToken.type = TokenType::CHAR;
+			symTable.insertVar(tempToken.lexeme, tempToken.type, depth, VariableType::CHART); 
+		}
 		match(TokenType::CHAR);
+	}
 
 	return;
 }
@@ -233,7 +282,7 @@ void VALUE()
 
 
 /****************************************************************************
- ** FUNCTION: PROCPART()                                                   **
+ ** FUNCTION: PART()                                                   **
  ****************************************************************************
  ** DESCRIPTION: follows the production rules for PROCPART                 **
  **              ProcPart -> ProcedureDecl ProcPart | lambda               **
@@ -245,8 +294,11 @@ void PROCPART()
 {
 	if(token.type == TokenType::PROCEDURE)
 	{
+		depth++;
+		maxDepth++;
 		PROCDECL();
 		PROCPART();
+		depth--;
 	}
  	return;
 }
@@ -282,9 +334,13 @@ void PROCDECL()
  ****************************************************************************/
 void PROCHEAD()
 {
+	string tLexeme;
 	match(TokenType::PROCEDURE);
+	tLexeme = token.lexeme;
 	match(TokenType::IDENTIFIER);
 	ARGS();
+	symTable.insertProc(tLexeme, TokenType::PROCEDURE, depth-1, 0, symTable.getParamListSize(paramPassingModes), paramTypes, paramPassingModes);
+
 	return;
 }
 
@@ -336,8 +392,31 @@ void ARGS()
  ****************************************************************************/
 void ARG_LIST()
 {
+	ParameterPassingMode passType = ParameterPassingMode::BY_VALUE;
+
+	if(token.type ==TokenType::VAR)
+		passType = ParameterPassingMode::BY_REFERENCE;
+
 	MODE();
 	ID_LIST();
+
+    for (auto tempToken : tempList) 
+	{
+        ListNode<ParameterPassingMode>* newNode = new ListNode<ParameterPassingMode>(passType);
+
+        if (paramPassingModes == nullptr)
+            paramPassingModes = newNode;
+        else 
+		{
+            ListNode<ParameterPassingMode>* current = paramPassingModes;
+
+            while (current->next != nullptr)
+                current = current->next;
+
+            current->next = newNode;
+        }
+    }
+
 	match(TokenType::COLON);
 	TYPEMARK();
 	MORE_ARGS();

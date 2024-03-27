@@ -24,9 +24,9 @@ After installation, run the `make` command to build the project.
 $ make
 ```
 
-After building the project, type `./output` to see the symbol table in action with a predefined driver program that tests the functionality.
+After building the project, type `./output <filename>` to see the token identification with the Lexer, as well as a full symbol table dump at all depths.
 ```
-$ ./output
+$ ./output <filename>
 ```
 
 ## Cleanup
