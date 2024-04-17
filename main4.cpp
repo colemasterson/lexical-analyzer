@@ -18,7 +18,6 @@
 
 #include "Lexer.h"
 #include "Parser.h"
-#include "SymbolTable.h"
 
 using namespace std;
 

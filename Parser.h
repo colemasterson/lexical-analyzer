@@ -23,7 +23,7 @@
 
 using namespace std;
 
-SymbolTable symTable;
+extern SymbolTable symTable;
 extern stack<Token> tokenStack;
 extern int maxDepth;
 
@@ -34,9 +34,9 @@ void CONSTPART();   //
 void CONSTTAIL();   //
 void VARPART();     //
 void VARTAIL();     //
-void ID_LIST();     // ?
+void ID_LIST();     //
 void TYPEMARK();    //
-void VALUE();       // ?
+void VALUE();       //
 void PROCPART();    //
 void PROCDECL();    //
 void PROCHEAD();    //
@@ -46,6 +46,21 @@ void ARG_LIST();    //
 void MORE_ARGS();   //
 void MODE();        //
 void STATEPART();   //
-void SEQ_STATE();   //
+// Assignment 6 Addons
+void SEQ_STATE();
+void STATEMENT();
+void STATTAIL();
+void ASSIGNSTAT();
+void IOSTAT();
+void EXPR();
+void RELATION();
+void SIMPLEEXPR();
+void MORETERM();
+void TERM();
+void MOREFACTOR();
+void FACTOR();
+void ADDOPF();
+void MULOPF();
+void SIGNOPF();
 
 #endif

@@ -25,7 +25,7 @@ Token tempTokenIdt;
 ListNode<VariableType> * paramTypes;
 ListNode<ParameterPassingMode> * paramPassingModes;
 
-//SymbolTable symTable;
+SymbolTable symTable;
 stack<Token> tokenStack;
 int maxDepth = 0;
 int depth = 0;
@@ -79,12 +79,18 @@ void match(TokenType desired)
 void PROG()
 {
     match(TokenType::MODULE);
+	string modName = token.lexeme;
     match(TokenType::IDENTIFIER);
     match(TokenType::SEMICOLON);
     DECLPART();
     STATEPART();
     match(TokenType::END);
+	string endName = token.lexeme;
     match(TokenType::IDENTIFIER);
+
+	if(modName != endName)
+	    cout << "Error: Module ends with '" << endName << "', but was declared as '" << modName << "'" << endl;
+
     match(TokenType::PERIOD);
     return;
 }
@@ -231,6 +237,7 @@ void ID_LIST()
  ****************************************************************************/
 void TYPEMARK()
 {
+	//cout << "TypeMark called for " << token.lexeme << endl;
 	if(token.type == TokenType::INTEGER)
 	{
 		if(tempList.size() >= 1)
@@ -276,7 +283,14 @@ void TYPEMARK()
  ****************************************************************************/
 void VALUE()
 {
-	match(TokenType::NUMBER);
+	if(token.type == INTEGER)
+		match(INTEGER);
+	else if(token.type == REAL)
+		match(REAL);
+	else if(token.type == STRING)
+		match(STRING);
+	else
+		cout << "Something is wrong here!\n";
 	return;
 }
 
@@ -482,14 +496,163 @@ void STATEPART()
  ** FUNCTION: SEQ_STATE()                                                  **
  ****************************************************************************
  ** DESCRIPTION: follows the production rules for SEQ_STATE		           **
- **              SeqOfStatements -> lambda						           **
+ **              SeqOfStatements -> Statement ; StatTail | lambda 		   **
  ** INPUT ARGS: None                                                       **
  ** OUTPUT ARGS: None                                                      **
  ** IN/OUT ARGS: None                                                      ** 
  ****************************************************************************/
 void SEQ_STATE() 
 {
+	if(token.type != TokenType::END)
+	{
+		//STATEMENT();
+		//match(TokenType::SEMICOLON);
+		//STATTAIL();
+	}
 	return;
 }
 
+/*
+/****************************************************************************
+ ** FUNCTION: STATTAIL()                                                  **
+ ****************************************************************************
+ ** DESCRIPTION: follows the production rules for StatTail		           **
+ **              StatTail -> Statement ; StatTail | lambda 		  		   **
+ ** INPUT ARGS: None                                                       **
+ ** OUTPUT ARGS: None                                                      **
+ ** IN/OUT ARGS: None                                                      ** 
+ ****************************************************************************
+void STATTAIL()
+{
+	if(token.type ! = TokenType::END) 
+	{
+		STATEMENT();
+		match(TokenType::SEMICOLON);
+		STATTAIL();
+	}
+	return;
+}
 
+void STATEMENT()
+{
+	if(token.type == TokenType::IDENTIFIER)
+		ASSIGNSTAT();
+	else
+		IOSTAT();
+
+	return;
+}
+
+void ASSIGNSTAT()
+{
+	match(TokenType::IDENTIFIER);
+	match(TokenType::ASSIGNOP);
+	EXPR();
+
+	return;
+}
+
+void IOSTAT()
+{
+	return;
+}
+
+void EXPR()
+{
+	RELATION();
+	return;
+}
+
+void RELATION()
+{
+	SIMPLEEXPR();
+	return;
+}
+
+void SIMPLEEXPR()
+{
+	TERM();
+	MORETERM();
+	return;
+}
+
+void TERM()
+{
+	FACTOR();
+	MOREFACTOR();
+	return;
+}
+
+void MORETERM()
+{
+	if(token.type == TokenType::ADDOP)
+	{
+		ADDOP();
+		TERM();
+		MORETERM();
+	}
+	return;
+}
+
+void FACTOR()
+{
+	switch(token.type)
+	{
+		case TokenType::IDENTIFIER:
+			tokenStack.push(token);
+			match(TokenType::IDENTIFIER);
+			break;
+		case TokenType::NUMBER:
+			tokenStack.push(token);
+			match(TokenType::NUMBER);
+			break;
+		case TokenType::TILDE:
+			match(TokenType::TILDE);
+			FACTOR();
+			break;
+		case TokenType::LPAREN:
+			match(TokenType::LPAREN);
+			EXPR();
+			match(TokenType::RPAREN);
+			break;
+		case TokenType::ADDOP:
+			SIGNOP();
+			FACTOR();
+		default:
+			cout << "Error when determining factor" << endl;
+			break;
+	}
+}
+
+void MOREFACTOR()
+{
+	if(token.type = TokenType::MULOP)
+	{
+		tokenStack.push(token);
+		MULOP();
+		FACTOR();
+		MOREFACTOR();
+	}
+	return;
+}
+
+void ADDOP()
+{
+	tokenStack.push(token);
+	match(TokenType::ADDOP);
+	return;
+}
+
+void MULOP()
+{
+	match(TokenType::MULOP);
+	return;
+}
+
+void SIGNOP()
+{
+  tokenStack.push(token);
+  match(TokenType::ADDOP);
+  cout << "Sign op added " << endl;
+}
+*/

@@ -73,7 +73,7 @@ bool SymbolTable::multipleDec(string lexeme, string symTabLexeme, int depth, int
 {
     if(lexeme == symTabLexeme && depth == symTabDepth)
     {
-        cout<<"Multiple declarations of: \""<< lexeme <<"\" at depth: "<< depth<<endl;
+        //cout<<"Multiple declarations of: \""<< lexeme <<"\" at depth: "<< depth<<endl;
         return true;
     }
 
@@ -84,26 +84,29 @@ void SymbolTable::insertVar(string lexeme, TokenType token, int depth, VariableT
 {
     int hash = this->hash(lexeme);
 
-    STEntry * newNode = new STEntry{lexeme, token, depth};
-    newNode->typeofEntry = varType;
+    // First, check the entire chain for duplicate declaration at the same depth
+    STEntry* currentNode = table[hash];
+    while (currentNode != nullptr) 
+    {
+        if (multipleDec(lexeme, currentNode->lexeme, depth, currentNode->depth)) 
+        {
+            cout << "Multiple declarations of variable: " << lexeme << " at depth: " << depth << endl;
+            return; // Exit if duplicate found
+        }
+        currentNode = currentNode->next;
+    }
 
+    // No duplicate found, proceed to insertion
+    STEntry *newNode = new STEntry{lexeme, token, depth};
+    newNode->typeofEntry = varType;
     newNode->variable.type = type;
     newNode->variable.offset = this->getOffset(depth);    
     newNode->variable.size = this->varSize(token);
-    
-    if (table[hash] == nullptr) 
-    {
-        table[hash] = newNode;
-    }
-    else 
-    {
-        STEntry* currentNode = table[hash];
-        while (currentNode->next != nullptr) 
-        {
-            currentNode = currentNode->next;
-        }
-        currentNode->next = newNode;
-    }
+
+    // Insert at the head of the chain for simplicity
+    newNode->next = table[hash];
+    table[hash] = newNode;
+    // cout << "Inserting variable: " << lexeme << " with token: " << revTokenMap[token] << " at depth: " << depth << endl;
 }
 
 
@@ -133,74 +136,66 @@ int SymbolTable::getVarListSize(ListNode<VariableType>* head)
 
 void SymbolTable::insertConst(string lexeme, TokenType token, int depth, bool isReal, int intValue, float realValue)
 {
-    // Create a hash value and STEntry node pointer
     int hashValue = hash(lexeme);
-    cout << "Const token type: " << revTokenMap[token] << endl;
 
+    // First, check the entire chain for duplicate declaration at the same depth
+    STEntry* currentNode = table[hashValue];
+    while (currentNode != nullptr) 
+    {
+        if (multipleDec(lexeme, currentNode->lexeme, depth, currentNode->depth)) 
+        {
+            cout << "Error: Multiple declarations of constant " << lexeme << " at depth " << depth << endl;
+            return; // Exit if duplicate found
+        }
+        currentNode = currentNode->next;
+    }
+
+    // No duplicate found, proceed to insertion
     STEntry * newNode = new STEntry{lexeme, token, depth};
     newNode->typeofEntry = constType;
     newNode->constant.isReal = isReal;
 
-    // set int or float value type
-    if(isReal)
+    if (isReal)
         newNode->constant.value.realValue = realValue;
     else
         newNode->constant.value.intValue = intValue;
 
-    // insert const into the table
-    if (table[hashValue] == nullptr) 
-    {
-        table[hashValue] = newNode;
-    }
-    else
-    {
-        // if there's a collision, iterate to end of list and insert
-        cout << "Collision for const entry: "<< lexeme << endl;
-        STEntry* current = table[hashValue];
-
-        while (current->next != nullptr)
-        {
-            // check for multiple declarations of the constant
-            if(multipleDec(lexeme, current->lexeme, depth, current->depth))
-                return;
-            current = current->next;
-        }
-
-        current->next = newNode;
-    }
+    // Insert at the head of the chain for simplicity
+    newNode->next = table[hashValue];
+    table[hashValue] = newNode;
+    //cout << "Inserting constant: " << lexeme << " at depth: " << depth << endl;
 }
+
 
 
 void SymbolTable::insertProc(string lexeme, TokenType token, int depth, int localVariablesSize, int numParams, ListNode<VariableType>* paramTypes, ListNode<ParameterPassingMode>* paramPassingModes) 
 {
-    // Create a hash value and STEntry node pointer
     int hashValue = hash(lexeme);
 
+    // First, check the entire chain for duplicate declaration at the same depth
+    STEntry* currentNode = table[hashValue];
+    while (currentNode != nullptr) 
+    {
+        if (multipleDec(lexeme, currentNode->lexeme, depth, currentNode->depth)) 
+        {
+            cout << "Error: Multiple declarations of " << lexeme << " at depth " << depth << endl;
+            return; // Exit if duplicate found
+        }
+        currentNode = currentNode->next;
+    }
+
+    // No duplicate found, proceed to insertion
     STEntry * newNode = new STEntry{lexeme, token, depth};
     newNode->typeofEntry = procType;
-    
-    // set the procedure specific values
     newNode->procedure.localVariablesSize = localVariablesSize;
     newNode->procedure.numParams = numParams;
-    newNode->procedure.paramTypes = paramTypes; // Directly assign the linked list for parameter types.
-    newNode->procedure.paramPassingModes = paramPassingModes; // Directly assign the linked list for parameter passing modes.
-    
-    // insert entry into symbol table
-    if (table[hashValue] == nullptr) 
-    {
-        table[hashValue] = newNode;
-    } 
-    else 
-    {
-        // if there's a collision, iterate to end of list and insert
-        cout << "Collision for procedure entry: "<< lexeme << endl;
-        STEntry* current = table[hashValue];
-        while (current->next != nullptr) 
-        {
-            current = current->next;
-        }
-        current->next = newNode;
-    }
+    newNode->procedure.paramTypes = paramTypes; 
+    newNode->procedure.paramPassingModes = paramPassingModes;
+
+    // Insert at the head of the chain for simplicity
+    newNode->next = table[hashValue];
+    table[hashValue] = newNode;
+    //cout << "Inserting procedure: " << lexeme << " at depth: " << depth << endl;
 }
 
 
