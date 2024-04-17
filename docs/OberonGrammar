@@ -36,5 +36,35 @@ StatmentPart -> begint SeqOfStatements | 
 
 SeqOfStatements -> 
 
+-- Assignment 6 Starts Here --
 
+SeqOfStatments -> Statement ; StatTail | 
+
+StatTail -> Statement ; StatTail | 
+
+Statement -> AssignStat | IOStat
+
+AssignStat -> idt := Expr
+
+IOStat -> 
+
+Expr -> Relation
+
+Relation -> SimpleExpr
+
+SimpleExpr -> Term MoreTerm
+
+MoreTerm -> Addop Term MoreTerm | 
+
+Term -> Factor MoreFactor
+
+MoreFactor -> Mulop Factor MoreFactor| 
+
+Factor -> idt | numt | ( Expr ) | ~ Factor| SignOp Factor
+
+Addop -> + | - | OR
+
+Mulop -> * | / |DIV|MOD| &
+
+SignOp -> -
 
