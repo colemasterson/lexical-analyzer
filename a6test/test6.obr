@@ -1,0 +1,6 @@
+MODULE six;
+CONST  count = 5;
+VAR    x,y,z:INTEGER;
+BEGIN
+  x:=y+count-z;
+END six.

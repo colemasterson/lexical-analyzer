@@ -1,0 +1,10 @@
+MODULE test3;
+VAR x,y:INTEGER;
+    z: REAL;
+  PROCEDURE a(x:INTEGER;y:INTEGER);
+  VAR  a,b:REAL;
+  BEGIN 
+   a := x/y + (b-a);
+  END a;
+BEGIN
+END test3.

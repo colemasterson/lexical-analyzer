@@ -13,7 +13,7 @@
 #include <string>
 #include <map>
 #include <cctype>
-
+#include <unistd.h>
 
 
 using namespace std;
@@ -505,14 +505,14 @@ void SEQ_STATE()
 {
 	if(token.type != TokenType::END)
 	{
-		//STATEMENT();
-		//match(TokenType::SEMICOLON);
-		//STATTAIL();
+		STATEMENT();
+		match(TokenType::SEMICOLON);
+		STATTAIL();
 	}
 	return;
 }
 
-/*
+
 /****************************************************************************
  ** FUNCTION: STATTAIL()                                                  **
  ****************************************************************************
@@ -521,18 +521,20 @@ void SEQ_STATE()
  ** INPUT ARGS: None                                                       **
  ** OUTPUT ARGS: None                                                      **
  ** IN/OUT ARGS: None                                                      ** 
- ****************************************************************************
+ ****************************************************************************/
 void STATTAIL()
 {
-	if(token.type ! = TokenType::END) 
+	if(token.type != TokenType::END) 
 	{
 		STATEMENT();
+		//cout << "Stuck in StatTail?" << endl;
 		match(TokenType::SEMICOLON);
 		STATTAIL();
 	}
 	return;
 }
 
+// Statement -> AssignStat | IOStat
 void STATEMENT()
 {
 	if(token.type == TokenType::IDENTIFIER)
@@ -542,7 +544,7 @@ void STATEMENT()
 
 	return;
 }
-
+// AssignStat -> idt := Expr
 void ASSIGNSTAT()
 {
 	match(TokenType::IDENTIFIER);
@@ -552,16 +554,20 @@ void ASSIGNSTAT()
 	return;
 }
 
+// IOStat -> lambda
 void IOSTAT()
 {
 	return;
 }
 
+// Expr -> Relation
 void EXPR()
 {
 	RELATION();
 	return;
 }
+
+// Relation -> SimpleExpr
 
 void RELATION()
 {
@@ -569,90 +575,117 @@ void RELATION()
 	return;
 }
 
+// SimpleExpr -> Term MoreTerm
+
 void SIMPLEEXPR()
 {
 	TERM();
+	//cout << "Completed Term inside simple expr" << endl;
 	MORETERM();
 	return;
 }
 
+//Term -> Factor MoreFactor
+
 void TERM()
 {
 	FACTOR();
+	//cout << "Completed FACTOR inside TERM" << endl;
 	MOREFACTOR();
 	return;
 }
+
+// MoreTerm -> Addop Term MoreTerm | lambda
 
 void MORETERM()
 {
 	if(token.type == TokenType::ADDOP)
 	{
-		ADDOP();
+		ADDOPF();
 		TERM();
 		MORETERM();
 	}
 	return;
 }
 
+//Factor -> idt | numt | ( Expr ) | ~ Factor| SignOp Factor
+
 void FACTOR()
 {
-	switch(token.type)
-	{
-		case TokenType::IDENTIFIER:
-			tokenStack.push(token);
-			match(TokenType::IDENTIFIER);
-			break;
-		case TokenType::NUMBER:
-			tokenStack.push(token);
-			match(TokenType::NUMBER);
-			break;
-		case TokenType::TILDE:
-			match(TokenType::TILDE);
-			FACTOR();
-			break;
-		case TokenType::LPAREN:
-			match(TokenType::LPAREN);
-			EXPR();
-			match(TokenType::RPAREN);
-			break;
-		case TokenType::ADDOP:
-			SIGNOP();
-			FACTOR();
-		default:
-			cout << "Error when determining factor" << endl;
-			break;
-	}
+
+    cout << "HERE" << setw(20) << token.lexeme << setw(20) << revTokenMap[token.type] << setw(20) << token.value << setw(20) << token.valueR << setw(20) << token.literal << endl;
+
+    switch(token.type)
+    {
+        case TokenType::IDENTIFIER:
+            tokenStack.push(token);
+            match(TokenType::IDENTIFIER);
+            break;
+        case TokenType::INTEGER:
+            tokenStack.push(token);
+            match(TokenType::INTEGER); // Ensure this matches the case condition
+            break;
+        case TokenType::REAL:
+            tokenStack.push(token);
+            match(TokenType::REAL);
+            break;
+        case TokenType::TILDE:
+            match(TokenType::TILDE);
+            FACTOR();
+            break;
+        case TokenType::LPAREN:
+            match(TokenType::LPAREN);
+            EXPR();
+            match(TokenType::RPAREN);
+            break;
+        case TokenType::ADDOP:
+            SIGNOPF();  // Ensure SIGNOPF handles token consumption correctly
+            FACTOR();
+            break;
+        default:
+            cout << "Error: Unexpected token in FACTOR: " << revTokenMap[token.type] << endl;
+            //match(token.type); // Consume the problematic token to prevent a loop
+            break;
+    }
 }
+
+
+// MoreFactor -> Mulop Factor MoreFactor| lambda
 
 void MOREFACTOR()
 {
-	if(token.type = TokenType::MULOP)
+	if(token.type == TokenType::MULOP)
 	{
 		tokenStack.push(token);
-		MULOP();
+		MULOPF();
 		FACTOR();
 		MOREFACTOR();
 	}
 	return;
 }
 
-void ADDOP()
+// Addop -> + | - | OR
+
+void ADDOPF()
 {
 	tokenStack.push(token);
 	match(TokenType::ADDOP);
 	return;
 }
 
-void MULOP()
+// Mulop -> * | / |DIV|MOD| &
+
+void MULOPF()
 {
 	match(TokenType::MULOP);
 	return;
 }
 
-void SIGNOP()
+// SignOp -> -
+
+void SIGNOPF()
 {
   tokenStack.push(token);
   match(TokenType::ADDOP);
   cout << "Sign op added " << endl;
 }
-*/

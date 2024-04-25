@@ -252,7 +252,7 @@ void SymbolTable::deleteDepth(int depth)
 void SymbolTable::writeTable(int depth) 
 {
     cout << "Contents of table at depth " << depth << ":" << endl;
-    cout << setw(20) << "LEXEME" << setw(20) << "TOKEN" << setw(20) << "DEPTH" << setw(20) << "TYPE" << setw(20) << "OFFSET"<< setw(20) << "SIZE" << endl; 
+    cout << setw(20) << "LEXEME" << setw(20) << "TOKEN" << setw(20) << "DEPTH" << setw(20) << "TYPE" << setw(20) << "OFFSET"<< setw(20) << "SIZE" << setw(20) << "VALUE" << setw(20) << "VALUER" << endl; 
 
     STEntry* currentNode = nullptr;
     for (int i = 0; i < size; i++) 

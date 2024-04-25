@@ -1,0 +1,6 @@
+MODULE TEST;
+    PROCEDURE one;
+
+    END two;
+
+END TEST.

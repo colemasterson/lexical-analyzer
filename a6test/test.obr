@@ -1,0 +1,8 @@
+MODULE test1;
+VAR a,b,c:REAL;
+    w,x,y:INTEGER;
+BEGIN
+  a := 10.0;
+  b := 20.0;
+  c := a + b;
+END test1.

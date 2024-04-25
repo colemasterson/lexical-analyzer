@@ -1,0 +1,14 @@
+(* Start of a 2 line
+   comment           *)
+MODULE four;
+VAR x,y,z:INTEGER;
+    a,b,c,d:INTEGER;
+  PROCEDURE summit(VAR a:INTEGER; x:INTEGER; y:INTEGER);
+  VAR sum:INTEGER; (*variable sum *)
+  BEGIN 
+    sum := (x*y) MOD 3;
+  END summit;
+BEGIN
+  x:=a+b/c+d;
+  y:= (a - b / 2)*x;
+END four.

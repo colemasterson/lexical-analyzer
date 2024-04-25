@@ -1,0 +1,9 @@
+MODULE seven;
+CONST  count=5;
+VAR   a,b:INTEGER;
+ PROCEDURE eight(x:INTEGER;y:INTEGER); 
+ BEGIN 
+ END eight;
+BEGIN
+ d := count - a;
+END seven.

@@ -1,0 +1,9 @@
+MODULE test2;
+  PROCEDURE one;
+  VAR x,w:INTEGER;
+      y,z:REAL;
+  BEGIN 
+    w:=x+y*z;
+  END one;
+BEGIN
+END test2.
