@@ -90,7 +90,7 @@ void SymbolTable::insertVar(string lexeme, TokenType token, int depth, VariableT
     {
         if (multipleDec(lexeme, currentNode->lexeme, depth, currentNode->depth)) 
         {
-            cout << "Multiple declarations of variable: " << lexeme << " at depth: " << depth << endl;
+            //cout << "Multiple declarations of variable: " << lexeme << " at depth: " << depth << endl;
             return; // Exit if duplicate found
         }
         currentNode = currentNode->next;
@@ -209,13 +209,13 @@ STEntry* SymbolTable::lookup(string lexeme)
     {
         if (currentNode->lexeme == lexeme) 
         {
-            cout << lexeme << " found at depth: " << currentNode->depth << endl;
+            //cout << lexeme << " found at depth: " << currentNode->depth << endl;
             return currentNode;
         }
         currentNode = currentNode->next;
     }
 
-    cout << lexeme << " was not found." << endl;
+    //cout << lexeme << " was not found." << endl;
     return nullptr;
 }
 
@@ -252,7 +252,7 @@ void SymbolTable::deleteDepth(int depth)
 void SymbolTable::writeTable(int depth) 
 {
     cout << "Contents of table at depth " << depth << ":" << endl;
-    cout << setw(20) << "LEXEME" << setw(20) << "TOKEN" << setw(20) << "DEPTH" << setw(20) << "TYPE" << setw(20) << "OFFSET"<< setw(20) << "SIZE" << setw(20) << "VALUE" << setw(20) << "VALUER" << endl; 
+    cout << setw(20) << "LEXEME" << setw(20) << "TOKEN" << setw(20) << "DEPTH" << setw(20) << "TYPE" << setw(20) << "OFFSET"<< setw(20) << "SIZE" << endl; 
 
     STEntry* currentNode = nullptr;
     for (int i = 0; i < size; i++) 

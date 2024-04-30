@@ -67,10 +67,7 @@ struct STEntry
 		<< setw(20) << depth 
 		<< setw(20) << variable.type 
 		<< setw(20) << variable.offset
-		<< setw(20) << variable.size 
-        << setw(20) << constant.value.intValue
-        << setw(20) << constant.value.realValue << endl;
-
+		<< setw(20) << variable.size << endl;
     };
 
 };

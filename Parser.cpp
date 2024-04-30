@@ -537,6 +537,7 @@ void STATTAIL()
 // Statement -> AssignStat | IOStat
 void STATEMENT()
 {
+	
 	if(token.type == TokenType::IDENTIFIER)
 		ASSIGNSTAT();
 	else
@@ -544,9 +545,12 @@ void STATEMENT()
 
 	return;
 }
-// AssignStat -> idt := Expr
+// AssignStat -> idt := ExprF
 void ASSIGNSTAT()
 {
+	if(token.type == TokenType::IDENTIFIER && symTable.lookup(token.lexeme) == nullptr)
+		cout << "ERROR: TOKEN \"" << token.lexeme << "\" IS UNDEFINED." << endl;
+
 	match(TokenType::IDENTIFIER);
 	match(TokenType::ASSIGNOP);
 	EXPR();
@@ -613,8 +617,9 @@ void MORETERM()
 void FACTOR()
 {
 
-    cout << "HERE" << setw(20) << token.lexeme << setw(20) << revTokenMap[token.type] << setw(20) << token.value << setw(20) << token.valueR << setw(20) << token.literal << endl;
-
+    //cout << "HERE" << setw(20) << token.lexeme << setw(20) << revTokenMap[token.type] << setw(20) << token.value << setw(20) << token.valueR << setw(20) << token.literal << endl;
+	if(token.type == TokenType::IDENTIFIER && symTable.lookup(token.lexeme) == nullptr)
+		cout << "ERROR: TOKEN \"" << token.lexeme << "\" IS UNDEFINED." << endl;
     switch(token.type)
     {
         case TokenType::IDENTIFIER:
